@@ -35,7 +35,7 @@ public class EventListener implements Listener {
             if (!this.statusData.get(playerName)) {
                 this.statusData.put(playerName, true);
                 String destination = plugin.portalData.get(data);
-                if (player.hasPermission("BungeePortals.portal." + destination) || player.hasPermission("BungeePortals.portal.*")) {
+                if (!player.hasPermission("BungeePortals.portal.deny." + destination) && (player.hasPermission("BungeePortals.portal." + destination) || player.hasPermission("BungeePortals.portal.*"))) {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     DataOutputStream dos = new DataOutputStream(baos);
                     dos.writeUTF("Connect");
