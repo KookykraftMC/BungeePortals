@@ -151,6 +151,7 @@ public class MetricsLite {
 
                 private boolean firstPost = true;
 
+                @Override
                 public void run() {
                     try {
                         // This has to be synchronized or it can collide with the disable method.
@@ -170,9 +171,9 @@ public class MetricsLite {
                         // After the first post we set firstPost to false
                         // Each post thereafter will be a ping
                         firstPost = false;
-                    } catch (IOException e) {
+                    } catch (IOException ex) {
                         if (debug) {
-                            Bukkit.getLogger().log(Level.INFO, "[Metrics] " + e.getMessage());
+                            Bukkit.getLogger().log(Level.INFO, "[Metrics] " + ex.getMessage());
                         }
                     }
                 }
@@ -358,7 +359,7 @@ public class MetricsLite {
         try {
             Class.forName("mineshafter.MineServer");
             return true;
-        } catch (Exception e) {
+        } catch (Exception ex) {
             return false;
         }
     }

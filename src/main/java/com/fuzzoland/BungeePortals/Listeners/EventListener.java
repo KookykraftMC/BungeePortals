@@ -26,19 +26,20 @@ public class EventListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
-        Block block = player.getWorld().getBlockAt(player.getLocation());
-        String data = block.getWorld().getName() + "#" + String.valueOf(block.getX()) + "#" + String.valueOf(block.getY()) + "#" + String.valueOf(block.getZ());
-        if (plugin.portalData.containsKey(data)) {
-            this.statusData.add(player.getUniqueId());
+        Block block = event.getTo().getBlock();
+        String data = block.getWorld().getName() + '#' + block.getX() + '#' + block.getY() + '#' + block.getZ();
 
-            String destination = plugin.portalData.get(data);
-            if (player.hasPermission("BungeePortals.portal." + destination) || player.hasPermission("BungeePortals.portal.*")) {
-                ByteArrayDataOutput out = ByteStreams.newDataOutput();
-                out.writeUTF("Connect");
-                out.writeUTF(destination);
-                player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
-            } else {
-                player.sendMessage(plugin.configFile.getString("NoPortalPermissionMessage").replace("{destination}", destination).replaceAll("(&([a-f0-9l-or]))", "\u00A7$2"));
+        String destination = plugin.getPortalData().get(data);
+        if (destination != null) {
+            if (this.statusData.add(player.getUniqueId())) {
+                if (player.hasPermission("BungeePortals.portal." + destination) || player.hasPermission("BungeePortals.portal.*")) {
+                    ByteArrayDataOutput out = ByteStreams.newDataOutput();
+                    out.writeUTF("Connect");
+                    out.writeUTF(destination);
+                    player.sendPluginMessage(plugin, BungeePortals.PROXY_NAME, out.toByteArray());
+                } else {
+                    player.sendMessage(plugin.getConfigFile().getString("NoPortalPermissionMessage").replace("{destination}", destination).replaceAll("(&([a-f0-9l-or]))", "\u00A7$2"));
+                }
             }
         } else {
             this.statusData.remove(player.getUniqueId());

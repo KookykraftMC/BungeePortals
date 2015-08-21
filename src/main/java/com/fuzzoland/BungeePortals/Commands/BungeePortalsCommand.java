@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class BungeePortalsCommand implements CommandExecutor {
@@ -28,6 +29,7 @@ public class BungeePortalsCommand implements CommandExecutor {
         this.plugin = plugin;
     }
 
+    @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
             sender.sendMessage(ChatColor.BLUE + plugin.getDescription().getFullName());
@@ -42,8 +44,8 @@ public class BungeePortalsCommand implements CommandExecutor {
         }
 
         if (args[0].equalsIgnoreCase("reload")) {
-            plugin.loadConfigurationFiles();
-            plugin.loadPortalsData();
+            plugin.reloadConfigurationFiles();
+            plugin.reloadPortalsData();
             sender.sendMessage(ChatColor.GREEN + "All configuration files and data have been reloaded.");
             return true;
         }
@@ -69,6 +71,11 @@ public class BungeePortalsCommand implements CommandExecutor {
         }
 
         if (args[0].equalsIgnoreCase("select")) {
+            if (plugin.getWorldEdit() == null) {
+                sender.sendMessage(ChatColor.RED + "Cannot do this as WorldEdit is not installed.");
+                return true;
+            }
+
             if (!(sender instanceof Player)) {
                 sender.sendMessage(ChatColor.RED + "Only players can use that command.");
                 return true;
@@ -80,7 +87,7 @@ public class BungeePortalsCommand implements CommandExecutor {
             }
 
             Player player = (Player) sender;
-            Selection selection = plugin.worldEdit.getSelection(player);
+            Selection selection = plugin.getWorldEdit().getSelection(player);
             if (selection == null) {
                 sender.sendMessage(ChatColor.RED + "You have to first create a WorldEdit selection!");
                 return true;
@@ -155,8 +162,9 @@ public class BungeePortalsCommand implements CommandExecutor {
                 return true;
             }
 
+            Map<String, String> portalData = plugin.getPortalData();
             for (String selection : selections) {
-                plugin.portalData.put(selection, args[1]);
+                portalData.put(selection, args[1]);
             }
 
             sender.sendMessage(ChatColor.GREEN.toString() + selections.size() + " portals have been created.");
@@ -181,8 +189,9 @@ public class BungeePortalsCommand implements CommandExecutor {
             }
 
             int count = 0;
+            Map<String, String> portalData = plugin.getPortalData();
             for (String selection : selections) {
-                if (plugin.portalData.remove(selection) != null) {
+                if (portalData.remove(selection) != null) {
                     count++;
                 }
             }

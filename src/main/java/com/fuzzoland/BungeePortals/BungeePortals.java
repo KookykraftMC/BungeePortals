@@ -3,125 +3,161 @@ package com.fuzzoland.BungeePortals;
 import com.fuzzoland.BungeePortals.Commands.BungeePortalsCommand;
 import com.fuzzoland.BungeePortals.Listeners.EventListener;
 import com.fuzzoland.BungeePortals.Tasks.SaveTask;
+import com.google.common.collect.Maps;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
-import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.*;
-import java.util.HashMap;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class BungeePortals extends JavaPlugin {
 
-    private Logger logger = Bukkit.getLogger();
-    public Map<String, String> portalData = new HashMap<String, String>();
-    public WorldEditPlugin worldEdit = null;
-    public YamlConfiguration configFile = null;
-    public YamlConfiguration portalsFile = null;
+    public static final String PROXY_NAME = "BungeeCord";
 
+    private final Map<String, String> portalData = Maps.newHashMap();
+
+    private WorldEditPlugin worldEdit;
+    private YamlConfiguration configFile;
+    private YamlConfiguration portalsFile;
+
+    @Override
     public void onEnable() {
-        Long time = System.currentTimeMillis();
+        long time = System.currentTimeMillis();
+        /*
+        Plugin.yml already handles this:
         if (getServer().getPluginManager().getPlugin("WorldEdit") == null) {
             getPluginLoader().disablePlugin(this);
             throw new NullPointerException("[BungeePortals] WorldEdit not found, disabling...");
-        }
+        }*/
+
         this.worldEdit = (WorldEditPlugin) getServer().getPluginManager().getPlugin("WorldEdit");
-        startMetrics();
 
         PluginCommand command = getCommand("bungeeportals");
         command.setExecutor(new BungeePortalsCommand(this));
         command.setPermission("bungeeportals.command.bportals");
+        getLogger().log(Level.INFO, '[' + getDescription().getName() + "] Commands registered!");
 
-        this.logger.log(Level.INFO, "[BungeePortals] Commands registered!");
         getServer().getPluginManager().registerEvents(new EventListener(this), this);
-        this.logger.log(Level.INFO, "[BungeePortals] Events registered!");
-        getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-        this.logger.log(Level.INFO, "[BungeePortals] Plugin channel registered!");
-        loadConfigurationFiles();
-        loadPortalsData();
-        Integer interval = this.configFile.getInt("SaveTask.Interval") * 20;
+        getLogger().log(Level.INFO, '[' + getDescription().getName() + "] Events registered!");
+
+        getServer().getMessenger().registerOutgoingPluginChannel(this, PROXY_NAME);
+        getLogger().log(Level.INFO, '[' + getDescription().getName() + "] Plugin channel registered!");
+
+        this.reloadConfigurationFiles();
+        this.reloadPortalsData();
+        this.startMetrics();
+
+        long interval = this.configFile.getInt("SaveTask.Interval") * 20L;
         new SaveTask(this).runTaskTimer(this, interval, interval);
-        this.logger.log(Level.INFO, "[BungeePortals] Save task started!");
-        this.logger.log(Level.INFO, "[BungeePortals] Version " + getDescription().getVersion() + " has been enabled. (" + (System.currentTimeMillis() - time) + "ms)");
+
+        getLogger().log(Level.INFO, '[' + getDescription().getName() + "] Save task started!");
+        getLogger().log(Level.INFO, '[' + getDescription().getName() + "] Version " + getDescription().getVersion() + " has been enabled. (" + (System.currentTimeMillis() - time) + "ms)");
     }
 
+    @Override
     public void onDisable() {
-        Long time = System.currentTimeMillis();
-        savePortalsData();
-        this.logger.log(Level.INFO, "[BungeePortals] Version " + getDescription().getVersion() + " has been disabled. (" + (System.currentTimeMillis() - time) + "ms)");
+        long time = System.currentTimeMillis();
+        this.savePortalsData();
+        getLogger().log(Level.INFO, '[' + getDescription().getName() + "] Version " + getDescription().getVersion() + " has been disabled. (" + (System.currentTimeMillis() - time) + "ms)");
+    }
+
+    public Map<String, String> getPortalData() {
+        return portalData;
+    }
+
+    public WorldEditPlugin getWorldEdit() {
+        return worldEdit;
+    }
+
+    public YamlConfiguration getConfigFile() {
+        return configFile;
     }
 
     private void startMetrics() {
         try {
-            MetricsLite metrics = new MetricsLite(this);
-            metrics.start();
-            this.logger.log(Level.INFO, "[BungeePortals] Metrics initiated!");
-        } catch (IOException e) {
-            e.printStackTrace();
+            new MetricsLite(this).start();
+            getLogger().log(Level.INFO, '[' + getDescription().getName() + "] Metrics initiated!");
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
     }
 
     private void createConfigurationFile(InputStream in, File file) {
+        OutputStream out = null;
         try {
-            OutputStream out = new FileOutputStream(file);
+            out = new FileOutputStream(file);
             byte[] buf = new byte[1024];
             int len;
             while ((len = in.read(buf)) > 0) {
                 out.write(buf, 0, len);
             }
-            out.close();
-            in.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void loadConfigurationFiles() {
-        File configFile = new File(getDataFolder(), "config.yml");
-        if (!configFile.exists()) {
-            configFile.getParentFile().mkdirs();
-            createConfigurationFile(getResource("config.yml"), configFile);
-            this.logger.log(Level.INFO, "[BungeePortals] Configuration file config.yml created!");
-        }
-        this.configFile = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "config.yml"));
-        this.logger.log(Level.INFO, "[BungeePortals] Configuration file config.yml loaded!");
-        File portalsFile = new File(getDataFolder(), "portals.yml");
-        if (!portalsFile.exists()) {
-            portalsFile.getParentFile().mkdirs();
-            createConfigurationFile(getResource("portals.yml"), portalsFile);
-            this.logger.log(Level.INFO, "[BungeePortals] Configuration file portals.yml created!");
-        }
-        this.portalsFile = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "portals.yml"));
-        this.logger.log(Level.INFO, "[BungeePortals] Configuration file portals.yml loaded!");
-    }
-
-    public void loadPortalsData() {
-        try {
-            Long time = System.currentTimeMillis();
-            for (String key : this.portalsFile.getKeys(false)) {
-                String value = this.portalsFile.getString(key);
-                this.portalData.put(key, value);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException ignored) {
+                }
             }
-            this.logger.log(Level.INFO, "[BungeePortals] Portal data loaded! (" + (System.currentTimeMillis() - time) + "ms)");
+
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException ignored) {
+                }
+            }
+        }
+    }
+
+    public void reloadConfigurationFiles() {
+        this.saveDefaultConfig();
+        this.getConfig().options().copyDefaults(true);
+
+        this.configFile = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "config.yml"));
+        getLogger().log(Level.INFO, '[' + getDescription().getName() + "] Configuration file " + configFile.getName() + " loaded!");
+
+        File portalsFile = new File(getDataFolder(), "portals.yml");
+        if (!portalsFile.exists() && portalsFile.getParentFile().mkdirs()) {
+            createConfigurationFile(getResource(portalsFile.getName()), portalsFile);
+            getLogger().log(Level.INFO, '[' + getDescription().getName() + "] Configuration file " + portalsFile.getName() + " created!");
+        }
+
+        this.portalsFile = YamlConfiguration.loadConfiguration(portalsFile);
+        getLogger().log(Level.INFO, '[' + getDescription().getName() + "] Configuration file " + portalsFile.getName() + " loaded!");
+    }
+
+    public void reloadPortalsData() {
+        this.portalData.clear();
+
+        try {
+            long time = System.currentTimeMillis();
+            for (String key : this.portalsFile.getKeys(false)) {
+                this.portalData.put(key, this.portalsFile.getString(key));
+            }
+            getLogger().log(Level.INFO, '[' + getDescription().getName() + "] Portal data loaded! (" + (System.currentTimeMillis() - time) + "ms)");
         } catch (NullPointerException ignored) {
         }
     }
 
     public void savePortalsData() {
-        Long time = System.currentTimeMillis();
+        long time = System.currentTimeMillis();
         for (Entry<String, String> entry : this.portalData.entrySet()) {
             this.portalsFile.set(entry.getKey(), entry.getValue());
         }
         try {
             this.portalsFile.save(new File(getDataFolder(), "portals.yml"));
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
-        this.logger.log(Level.INFO, "[BungeePortals] Portal data saved! (" + (System.currentTimeMillis() - time) + "ms)");
+        getLogger().log(Level.INFO, '[' + getDescription().getName() + "] Portal data saved! (" + (System.currentTimeMillis() - time) + "ms)");
     }
 }
