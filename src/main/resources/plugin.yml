@@ -7,12 +7,12 @@ dev-url: http://www.spigotmc.org/resources/bungeeportals.19/
 softdepend: [WorldEdit]
 
 commands:
-    BPortals:
-        description: Do cool stuff.
+  BPortals:
+    description: Do cool stuff.
 permissions:
-    BungeePortals.command.BPortals:
-        description: Allowed to access the command /BPortals.
-        default: op
-    BungeePortals.portal.*:
-        description: Access to all portals.
-        default: true
+  BungeePortals.command.BPortals:
+    description: Allowed to access the command /BPortals.
+    default: op
+  BungeePortals.portal.*:
+    description: Access to all portals.
+    default: true
