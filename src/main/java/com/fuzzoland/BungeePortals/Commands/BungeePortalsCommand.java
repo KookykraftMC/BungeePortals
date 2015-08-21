@@ -1,6 +1,8 @@
 package com.fuzzoland.BungeePortals.Commands;
 
 import com.fuzzoland.BungeePortals.BungeePortals;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.sk89q.worldedit.bukkit.selections.CuboidSelection;
 import com.sk89q.worldedit.bukkit.selections.Selection;
 import org.bukkit.ChatColor;
@@ -12,14 +14,16 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class BungeePortalsCommand implements CommandExecutor {
 
-    private BungeePortals plugin;
-    private Map<String, List<String>> selections = new HashMap<String, List<String>>();
+    private final BungeePortals plugin;
+    private final Multimap<UUID, String> selections = HashMultimap.create();
 
     public BungeePortalsCommand(BungeePortals plugin) {
         this.plugin = plugin;
@@ -45,9 +49,8 @@ public class BungeePortalsCommand implements CommandExecutor {
                     sender.sendMessage(ChatColor.GREEN + "Portal data saved!");
                 } else if (args[0].equalsIgnoreCase("clear")) {
                     if (sender instanceof Player) {
-                        String playerName = sender.getName();
-                        if (this.selections.containsKey(playerName)) {
-                            this.selections.remove(playerName);
+                        UUID playerUUID = ((Player) sender).getUniqueId();
+                        if (this.selections.removeAll(playerUUID) != null) {
                             sender.sendMessage(ChatColor.GREEN + "Selection cleared.");
                         } else {
                             sender.sendMessage(ChatColor.RED + "You haven't selected anything.");
@@ -62,12 +65,11 @@ public class BungeePortalsCommand implements CommandExecutor {
                 if (args[0].equalsIgnoreCase("select")) {
                     if (sender instanceof Player) {
                         Player player = (Player) sender;
-                        String playerName = player.getName();
+                        UUID playerUUID = player.getUniqueId();
                         Selection selection = plugin.worldEdit.getSelection(player);
                         if (selection != null) {
                             if (selection instanceof CuboidSelection) {
                                 List<Location> locations = getLocationsFromCuboid((CuboidSelection) selection);
-                                List<String> blocks = new ArrayList<String>();
                                 Integer count = 0;
                                 Integer filtered = 0;
                                 String[] ids = null;
@@ -95,17 +97,16 @@ public class BungeePortalsCommand implements CommandExecutor {
                                             }
                                         }
                                         if (found) {
-                                            blocks.add(block.getWorld().getName() + "#" + String.valueOf(block.getX()) + "#" + String.valueOf(block.getY()) + "#" + String.valueOf(block.getZ()));
+                                            selections.put(playerUUID, block.getWorld().getName() + "#" + String.valueOf(block.getX()) + "#" + String.valueOf(block.getY()) + "#" + String.valueOf(block.getZ()));
                                             count++;
                                         } else {
                                             filtered++;
                                         }
                                     } else {
-                                        blocks.add(block.getWorld().getName() + "#" + String.valueOf(block.getX()) + "#" + String.valueOf(block.getY()) + "#" + String.valueOf(block.getZ()));
+                                        selections.put(playerUUID, block.getWorld().getName() + "#" + String.valueOf(block.getX()) + "#" + String.valueOf(block.getY()) + "#" + String.valueOf(block.getZ()));
                                         count++;
                                     }
                                 }
-                                this.selections.put(playerName, blocks);
                                 sender.sendMessage(ChatColor.GREEN + String.valueOf(count) + " blocks have been selected, " + String.valueOf(filtered) + " filtered.");
                                 sender.sendMessage(ChatColor.GREEN + "Use the selection in the create and remove commands.");
                             } else {
@@ -119,13 +120,13 @@ public class BungeePortalsCommand implements CommandExecutor {
                     }
                 } else if (args[0].equalsIgnoreCase("create")) {
                     if (sender instanceof Player) {
-                        String playerName = sender.getName();
-                        if (this.selections.containsKey(playerName)) {
-                            List<String> selection = this.selections.get(playerName);
-                            for (String block : selection) {
+                        UUID playerUUID = ((Player) sender).getUniqueId();
+                        Collection<String> selections = this.selections.get(playerUUID);
+                        if (selections != null && !selections.isEmpty()) {
+                            for (String block : selections) {
                                 plugin.portalData.put(block, args[1]);
                             }
-                            sender.sendMessage(ChatColor.GREEN + String.valueOf(selection.size()) + " portals have been created.");
+                            sender.sendMessage(ChatColor.GREEN + String.valueOf(selections.size()) + " portals have been created.");
                         } else {
                             sender.sendMessage(ChatColor.RED + "You haven't selected anything.");
                         }
@@ -134,12 +135,12 @@ public class BungeePortalsCommand implements CommandExecutor {
                     }
                 } else if (args[0].equalsIgnoreCase("remove")) {
                     if (sender instanceof Player) {
-                        String playerName = sender.getName();
-                        if (this.selections.containsKey(playerName)) {
-                            Integer count = 0;
-                            for (String block : this.selections.get(playerName)) {
-                                if (plugin.portalData.containsKey(block)) {
-                                    plugin.portalData.remove(block);
+                        UUID playerUUID = ((Player) sender).getUniqueId();
+                        Collection<String> selections = this.selections.get(playerUUID);
+                        if (selections != null && !selections.isEmpty()) {
+                            int count = 0;
+                            for (String block : selections) {
+                                if (plugin.portalData.remove(block) != null) {
                                     count++;
                                 }
                             }
