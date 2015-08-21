@@ -26,7 +26,6 @@ public class BungeePortalsCommand implements CommandExecutor {
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-        if (sender.hasPermission("BungeePortals.command.BPortals")) {
             if (args.length == 0) {
                 sender.sendMessage(ChatColor.BLUE + "BungeePortals v" + plugin.getDescription().getVersion() + " by YoFuzzy3");
                 sender.sendMessage(ChatColor.GREEN + "/BPortals reload " + ChatColor.RED + "Reload all files and data.");
@@ -157,9 +156,6 @@ public class BungeePortalsCommand implements CommandExecutor {
             } else {
                 sender.sendMessage(ChatColor.RED + "Type /BPortals for help!");
             }
-        } else {
-            sender.sendMessage(ChatColor.RED + "You do not have permission to use that command.");
-        }
         return true;
     }
 

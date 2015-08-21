@@ -5,6 +5,7 @@ import com.fuzzoland.BungeePortals.Listeners.EventListener;
 import com.fuzzoland.BungeePortals.Tasks.SaveTask;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import org.bukkit.Bukkit;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -31,7 +32,11 @@ public class BungeePortals extends JavaPlugin {
         }
         this.worldEdit = (WorldEditPlugin) getServer().getPluginManager().getPlugin("WorldEdit");
         startMetrics();
-        getCommand("bungeeportals").setExecutor(new BungeePortalsCommand(this));
+
+        PluginCommand command = getCommand("bungeeportals");
+        command.setExecutor(new BungeePortalsCommand(this));
+        command.setPermission("bungeeportals.command.bportals");
+
         this.logger.log(Level.INFO, "[BungeePortals] Commands registered!");
         getServer().getPluginManager().registerEvents(new EventListener(this), this);
         this.logger.log(Level.INFO, "[BungeePortals] Events registered!");
