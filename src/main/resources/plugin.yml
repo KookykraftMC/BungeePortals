@@ -7,7 +7,8 @@ dev-url: http://www.spigotmc.org/resources/bungeeportals.19/
 softdepend: [WorldEdit]
 
 commands:
-  BPortals:
+  bungeeportals:
+    aliases: [bportals]
     description: Do cool stuff.
 permissions:
   BungeePortals.command.BPortals:
