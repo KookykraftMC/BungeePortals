@@ -9,11 +9,11 @@ softdepend: [WorldEdit]
 commands:
   bungeeportals:
     aliases: [bportals]
-    description: Do cool stuff.
+    description: Command to manage BungeeCord server portals.
 permissions:
-  BungeePortals.command.BPortals:
+  bungeeportals.command.bportals:
     description: Allowed to access the command /BPortals.
     default: op
-  BungeePortals.portal.*:
+  bungeebortals.portal.*:
     description: Access to all portals.
     default: true
