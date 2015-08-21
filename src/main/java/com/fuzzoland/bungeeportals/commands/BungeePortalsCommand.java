@@ -5,6 +5,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.sk89q.worldedit.bukkit.selections.CuboidSelection;
 import com.sk89q.worldedit.bukkit.selections.Selection;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -13,6 +14,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginDescriptionFile;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,7 +34,8 @@ public class BungeePortalsCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
-            sender.sendMessage(ChatColor.BLUE + plugin.getDescription().getFullName());
+            PluginDescriptionFile descriptionFile = plugin.getDescription();
+            sender.sendMessage(ChatColor.BLUE + descriptionFile.getFullName() + " by " + StringUtils.join(descriptionFile.getAuthors(), ", "));
             sender.sendMessage(ChatColor.GREEN + "/" + label + " reload " + ChatColor.RED + "Reload all files and data.");
             sender.sendMessage(ChatColor.GREEN + "/" + label + " forcesave " + ChatColor.RED + "Force-save portals.");
             sender.sendMessage(ChatColor.GREEN + "/" + label + " select <filter,list> " + ChatColor.RED + "Get selection.");
