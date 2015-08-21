@@ -7,8 +7,8 @@
     <name>BungeePortals</name>
     <repositories>
         <repository>
-            <id>bukkit-repo</id>
-            <url>http://repo.bukkit.org/content/groups/public</url>
+            <id>paperspigot-repo</id>
+            <url>https://ci.destroystokyo.com/plugin/repository/everything/</url>
         </repository>
         <repository>
             <id>sk89q-repo</id>
@@ -33,9 +33,9 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <version>1.6.4-R2.0</version>
+            <groupId>org.github.paperspigot</groupId>
+            <artifactId>paperspigot-api</artifactId>
+            <version>1.7.10-R0.1-SNAPSHOT</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
