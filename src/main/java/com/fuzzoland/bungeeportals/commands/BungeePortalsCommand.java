@@ -42,7 +42,10 @@ public class BungeePortalsCommand implements CommandExecutor {
             sender.sendMessage(ChatColor.GREEN + "/" + label + " clear " + ChatColor.RED + "Clear selection.");
             sender.sendMessage(ChatColor.GREEN + "/" + label + " create <destination> " + ChatColor.RED + "Create portals.");
             sender.sendMessage(ChatColor.GREEN + "/" + label + " remove <destination> " + ChatColor.RED + "Remove portals.");
-            sender.sendMessage(ChatColor.BLUE + "Visit www.spigotmc.org/resources/bungeeportals.19 for help.");
+            if (descriptionFile.getWebsite() != null) {
+                sender.sendMessage(ChatColor.BLUE + "Visit " + descriptionFile.getWebsite() + " for help.");
+            }
+
             return true;
         }
 
