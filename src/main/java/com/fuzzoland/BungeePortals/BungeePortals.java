@@ -7,6 +7,7 @@ import com.google.common.collect.Maps;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -31,14 +32,11 @@ public class BungeePortals extends JavaPlugin {
     @Override
     public void onEnable() {
         long time = System.currentTimeMillis();
-        /*
-        Plugin.yml already handles this:
-        if (getServer().getPluginManager().getPlugin("WorldEdit") == null) {
-            getPluginLoader().disablePlugin(this);
-            throw new NullPointerException("[bungeeportals] WorldEdit not found, disabling...");
-        }*/
 
-        this.worldEdit = (WorldEditPlugin) getServer().getPluginManager().getPlugin("WorldEdit");
+        Plugin worldEditPlugin = getServer().getPluginManager().getPlugin("WorldEdit");
+        if (worldEditPlugin == null) {
+            getLogger().warning('[' + getDescription().getName() + "] WorldEdit not found, will not be able to create portals");
+        } else this.worldEdit = (WorldEditPlugin) worldEditPlugin;
 
         PluginCommand command = getCommand("bungeeportals");
         command.setExecutor(new BungeePortalsCommand(this));
