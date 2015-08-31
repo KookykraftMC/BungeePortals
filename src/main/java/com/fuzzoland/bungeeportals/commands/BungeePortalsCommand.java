@@ -92,7 +92,7 @@ public class BungeePortalsCommand implements CommandExecutor {
                 return true;
             }
 
-            if (args[0].equalsIgnoreCase("remove")) {
+            if (args[0].equalsIgnoreCase("remove") || args[0].equalsIgnoreCase("del") || args[0].equalsIgnoreCase("delete")) {
                 if (!(sender instanceof Player)) {
                     sender.sendMessage(ChatColor.RED + "This command is only executable by players.");
                     return true;
