@@ -23,6 +23,7 @@ public class BungeePortals extends JavaPlugin {
 
     public static final String PROXY_NAME = "BungeeCord";
 
+    // key -> location string, value -> server name
     private final Map<String, String> portalData = Maps.newHashMap();
 
     private WorldEditPlugin worldEdit;
@@ -63,7 +64,7 @@ public class BungeePortals extends JavaPlugin {
     @Override
     public void onDisable() {
         long time = System.currentTimeMillis();
-        this.savePortalsData();
+        this.savePortalConfiguration();
         getLogger().log(Level.INFO, "Version " + getDescription().getVersion() + " has been disabled. (" + (System.currentTimeMillis() - time) + "ms)");
     }
 
@@ -146,16 +147,20 @@ public class BungeePortals extends JavaPlugin {
         }
     }
 
-    public void savePortalsData() {
+    public void savePortalConfiguration() {
+        //TODO: write lock for concurrent saving when creating and deleting.
+
         long time = System.currentTimeMillis();
         for (Entry<String, String> entry : this.portalData.entrySet()) {
             this.portalsFile.set(entry.getKey(), entry.getValue());
         }
+
         try {
             this.portalsFile.save(new File(getDataFolder(), "portals.yml"));
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+
         getLogger().log(Level.INFO, "Portal data saved! (" + (System.currentTimeMillis() - time) + "ms)");
     }
 }

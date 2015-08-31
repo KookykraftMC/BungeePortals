@@ -14,7 +14,7 @@ public class SaveTask extends BukkitRunnable {
     @Override
     public void run() {
         if (plugin.getConfigFile().getBoolean("SaveTask.Enabled")) {
-            plugin.savePortalsData();
+            plugin.savePortalConfiguration();
         }
     }
 }
