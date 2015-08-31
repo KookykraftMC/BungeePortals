@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public class BungeePortalsCommand implements CommandExecutor {
@@ -68,7 +69,8 @@ public class BungeePortalsCommand implements CommandExecutor {
                 return true;
             }
 
-            if (this.selections.removeAll(((Player) sender).getUniqueId()) != null) {
+            Collection<String> selections = this.selections.removeAll(((Player) sender).getUniqueId());
+            if (selections != null && !selections.isEmpty()) {
                 sender.sendMessage(ChatColor.GREEN + "Selection cleared.");
             } else {
                 sender.sendMessage(ChatColor.RED + "You haven't selected anything.");
@@ -195,9 +197,9 @@ public class BungeePortalsCommand implements CommandExecutor {
             }
 
             int count = 0;
-            Map<String, String> portalData = plugin.getPortalData();
+            Set<String> portalData = plugin.getPortalData().keySet();
             for (String selection : selections) {
-                if (portalData.remove(selection) != null) {
+                if (portalData.remove(selection)) {
                     count++;
                 }
             }
