@@ -3,9 +3,9 @@ package com.fuzzoland.bungeeportals.commands;
 import com.fuzzoland.bungeeportals.BungeePortals;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.sk89q.worldedit.bukkit.selections.CuboidSelection;
 import com.sk89q.worldedit.bukkit.selections.Selection;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -101,11 +101,6 @@ public class BungeePortalsCommand implements CommandExecutor {
                 return true;
             }
 
-            if (!(selection instanceof CuboidSelection)) {
-                sender.sendMessage(ChatColor.RED + "Must be a cuboid selection!");
-                return true;
-            }
-
             int count = 0;
             int filtered = 0;
             String[] ids = null;
@@ -117,7 +112,7 @@ public class BungeePortalsCommand implements CommandExecutor {
 
             World world = player.getWorld();
             UUID uuid = player.getUniqueId();
-            List<Location> locations = getLocationsFromCuboid((CuboidSelection) selection);
+            final List<Location> locations = getLocationsFromSelection(selection);
             for (Location location : locations) {
                 Block block = world.getBlockAt(location);
                 if (filter) {
@@ -212,11 +207,13 @@ public class BungeePortalsCommand implements CommandExecutor {
         return true;
     }
 
-    private List<Location> getLocationsFromCuboid(CuboidSelection cuboid) {
-        World world = cuboid.getWorld();
+    private List<Location> getLocationsFromSelection(Selection selection) {
+        Validate.notNull(selection, "Selection cannot be null");
+
+        World world = selection.getWorld();
         List<Location> locations = new ArrayList<Location>();
-        Location minLocation = cuboid.getMinimumPoint();
-        Location maxLocation = cuboid.getMaximumPoint();
+        Location minLocation = selection.getMinimumPoint();
+        Location maxLocation = selection.getMaximumPoint();
         for (int x = minLocation.getBlockX(); x <= maxLocation.getBlockX(); x++) {
             for (int y = minLocation.getBlockY(); y <= maxLocation.getBlockY(); y++) {
                 for (int z = minLocation.getBlockZ(); z <= maxLocation.getBlockZ(); z++) {
