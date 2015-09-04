@@ -1,6 +1,7 @@
-package com.fuzzoland.bungeeportals.tasks;
+package com.applenick.bungeeportals.tasks;
 
-import com.fuzzoland.bungeeportals.BungeePortals;
+import com.applenick.bungeeportals.BungeePortals;
+
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class SaveTask extends BukkitRunnable {

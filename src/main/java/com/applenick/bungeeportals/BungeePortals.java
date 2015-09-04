@@ -1,30 +1,41 @@
-package com.fuzzoland.bungeeportals;
-
-import com.fuzzoland.bungeeportals.commands.BungeePortalsCommand;
-import com.fuzzoland.bungeeportals.listeners.EventListener;
-import com.fuzzoland.bungeeportals.tasks.SaveTask;
-import com.google.common.collect.Maps;
-import com.sk89q.worldedit.bukkit.WorldEditPlugin;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
+package com.applenick.bungeeportals;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
+
+import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import com.applenick.bungeeportals.commands.PortalCommands;
+import com.applenick.bungeeportals.listeners.EventListener;
+import com.applenick.bungeeportals.tasks.SaveTask;
+import com.google.common.collect.Maps;
+import com.sk89q.bukkit.util.CommandsManagerRegistration;
+import com.sk89q.minecraft.util.commands.CommandException;
+import com.sk89q.minecraft.util.commands.CommandPermissionsException;
+import com.sk89q.minecraft.util.commands.CommandUsageException;
+import com.sk89q.minecraft.util.commands.CommandsManager;
+import com.sk89q.minecraft.util.commands.MissingNestedCommandException;
+import com.sk89q.minecraft.util.commands.WrappedCommandException;
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 
 public class BungeePortals extends JavaPlugin {
 
     public static final String PROXY_NAME = "BungeeCord";
 
     // key -> location string, value -> server name
-    private final Map<String, String> portalData = Maps.newHashMap();
+    private final ConcurrentMap<String, String> portalData = Maps.newConcurrentMap();
 
     private WorldEditPlugin worldEdit;
     private YamlConfiguration configFile;
@@ -39,9 +50,7 @@ public class BungeePortals extends JavaPlugin {
             getLogger().warning("WorldEdit not found, will not be able to create portals");
         } else this.worldEdit = (WorldEditPlugin) worldEditPlugin;
 
-        PluginCommand command = getCommand("bungeeportals");
-        command.setExecutor(new BungeePortalsCommand(this));
-        command.setPermission("bungeeportals.command.bportals");
+        this.setupCommands();
         getLogger().log(Level.INFO, "Commands registered!");
 
         getServer().getPluginManager().registerEvents(new EventListener(this), this);
@@ -52,7 +61,6 @@ public class BungeePortals extends JavaPlugin {
 
         this.reloadConfigurationFiles();
         this.reloadPortalsData();
-        this.startMetrics();
 
         long interval = this.configFile.getInt("SaveTask.Interval") * 20L;
         new SaveTask(this).runTaskTimer(this, interval, interval);
@@ -68,7 +76,7 @@ public class BungeePortals extends JavaPlugin {
         getLogger().log(Level.INFO, "Version " + getDescription().getVersion() + " has been disabled. (" + (System.currentTimeMillis() - time) + "ms)");
     }
 
-    public Map<String, String> getPortalData() {
+    public ConcurrentMap<String, String> getPortalData() {
         return portalData;
     }
 
@@ -78,15 +86,6 @@ public class BungeePortals extends JavaPlugin {
 
     public YamlConfiguration getConfigFile() {
         return configFile;
-    }
-
-    private void startMetrics() {
-        try {
-            new MetricsLite(this).start();
-            getLogger().log(Level.INFO, "Metrics initiated!");
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
     }
 
     private void createConfigurationFile(InputStream in, File file) {
@@ -163,4 +162,43 @@ public class BungeePortals extends JavaPlugin {
 
         getLogger().log(Level.INFO, "Portal data saved! (" + (System.currentTimeMillis() - time) + "ms)");
     }
+    
+    //Command Framwork
+	private CommandsManager<CommandSender> commands;
+	private void setupCommands(){
+		this.commands = new CommandsManager<CommandSender>() {
+			@Override public boolean hasPermission(CommandSender sender, String perm) {
+				return sender instanceof ConsoleCommandSender || sender.hasPermission(perm);
+			}
+		};
+
+		CommandsManagerRegistration cmdRegister = new CommandsManagerRegistration(this, this.commands);
+		cmdRegister.register(PortalCommands.PortalCommandsParent.class);
+	}
+    
+    @Override
+	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
+		try {
+			this.commands.execute(cmd.getName(), args, sender, sender);
+		} catch (CommandPermissionsException e) {
+			sender.sendMessage(ChatColor.RED + "You don't have permission.");
+		} catch (MissingNestedCommandException e) {
+			sender.sendMessage(ChatColor.RED + e.getUsage());
+		} catch (CommandUsageException e) {
+			sender.sendMessage(ChatColor.RED + e.getMessage());
+			sender.sendMessage(ChatColor.RED + e.getUsage());
+		} catch (WrappedCommandException e) {
+			if (e.getCause() instanceof NumberFormatException) {
+				sender.sendMessage(ChatColor.RED + "Number expected, string received instead.");
+			} else {
+				sender.sendMessage(ChatColor.RED + "An error has occurred. See console.");
+				e.printStackTrace();
+			}
+		} catch (CommandException e) {
+			sender.sendMessage(ChatColor.RED + e.getMessage());
+		}
+
+		return true;
+	}
+    
 }

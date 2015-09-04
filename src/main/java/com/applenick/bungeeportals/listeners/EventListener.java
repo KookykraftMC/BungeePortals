@@ -1,9 +1,10 @@
-package com.fuzzoland.bungeeportals.listeners;
+package com.applenick.bungeeportals.listeners;
 
-import com.fuzzoland.bungeeportals.BungeePortals;
+import com.applenick.bungeeportals.BungeePortals;
 import com.google.common.collect.Sets;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

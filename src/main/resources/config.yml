@@ -1,4 +1,4 @@
-# BungeePortals configuration file, visit www.spigotmc.org/resources/bungeeportals.19 for help.
+# BungeePortals configuration file
 SaveTask:
   Enabled: false
   Interval: 600
