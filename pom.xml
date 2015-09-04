@@ -1,21 +1,45 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>com.fuzzoland</groupId>
-    <artifactId>BungeePortals</artifactId>
-    <description>Create portals of any shape or size with WorldEdit, for BungeeCord.</description>
-    <version>1.2</version>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.applenick</groupId>
+	<artifactId>BungeePortals</artifactId>
+	<description>Create portals of any shape or size with WorldEdit, for BungeeCord.</description>
     <name>BungeePortals</name>
+    <version>2.0</version>
+    
     <repositories>
+		<repository>
+			<id>spigot-repo</id>
+			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+		</repository>
         <repository>
-            <id>paperspigot-repo</id>
-            <url>https://ci.destroystokyo.com/plugin/repository/everything/</url>
+           	<id>overcast</id>
+            <url>https://repo.oc.tc/content/groups/public</url>
         </repository>
         <repository>
             <id>sk89q-repo</id>
             <url>http://maven.sk89q.com/repo/</url>
         </repository>
     </repositories>
+    
+    <dependencies>
+    	<dependency>
+	        <groupId>org.spigotmc</groupId>
+	        <artifactId>spigot-api</artifactId>
+	        <version>1.8.8-R0.1-SNAPSHOT</version>
+	        <scope>provided</scope>
+		</dependency>
+  		<dependency>
+			<groupId>com.sk89q</groupId>
+			<artifactId>command-framework-bukkit</artifactId>
+			<version>0.5-SNAPSHOT</version>
+		</dependency>
+        <dependency>
+            <groupId>com.sk89q</groupId>
+            <artifactId>worldedit</artifactId>
+            <version>5.5.8</version>
+        </dependency>
+    </dependencies>
     <build>
         <sourceDirectory>${basedir}/src/main/java/</sourceDirectory>
         <finalName>${project.name}</finalName>
@@ -34,24 +58,10 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.3</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-    <dependencies>
-        <dependency>
-            <groupId>org.github.paperspigot</groupId>
-            <artifactId>paperspigot-api</artifactId>
-            <version>1.7.10-R0.1-SNAPSHOT</version>
-            <type>jar</type>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.sk89q</groupId>
-            <artifactId>worldedit</artifactId>
-            <version>5.5.8</version>
-        </dependency>
-    </dependencies>
 </project>
