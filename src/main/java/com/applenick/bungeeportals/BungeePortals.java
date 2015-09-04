@@ -40,9 +40,20 @@ public class BungeePortals extends JavaPlugin {
     private WorldEditPlugin worldEdit;
     private YamlConfiguration configFile;
     private YamlConfiguration portalsFile;
+    
+    private static BungeePortals plugin;
+    public static BungeePortals get(){
+    	return plugin;
+    }
+    
+    private static PortalManager manager;
+    public static PortalManager getManager(){
+    	return manager;
+    }
 
     @Override
     public void onEnable() {
+    	plugin = this;
         long time = System.currentTimeMillis();
 
         Plugin worldEditPlugin = getServer().getPluginManager().getPlugin("WorldEdit");
@@ -50,6 +61,9 @@ public class BungeePortals extends JavaPlugin {
             getLogger().warning("WorldEdit not found, will not be able to create portals");
         } else this.worldEdit = (WorldEditPlugin) worldEditPlugin;
 
+        //TODO: Enable when new portal features are added
+        //this.manager = new PortalManager();
+        
         this.setupCommands();
         getLogger().log(Level.INFO, "Commands registered!");
 
@@ -163,7 +177,7 @@ public class BungeePortals extends JavaPlugin {
         getLogger().log(Level.INFO, "Portal data saved! (" + (System.currentTimeMillis() - time) + "ms)");
     }
     
-    //Command Framwork
+    //Command Framework
 	private CommandsManager<CommandSender> commands;
 	private void setupCommands(){
 		this.commands = new CommandsManager<CommandSender>() {

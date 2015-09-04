@@ -39,7 +39,7 @@ public class EventListener implements Listener {
         String destination = plugin.getPortalData().get(data);
         if (destination != null) {
             if (this.statusData.add(player.getUniqueId())) {
-                if (player.hasPermission("bungeeportals.portal." + destination) || player.hasPermission("bungeeportals.portal.*")) {
+                if (player.hasPermission("bportals.portal." + destination) || player.hasPermission("bportals.portal.*")) {
                     ByteArrayDataOutput out = ByteStreams.newDataOutput();
                     out.writeUTF("Connect");
                     out.writeUTF(destination);
