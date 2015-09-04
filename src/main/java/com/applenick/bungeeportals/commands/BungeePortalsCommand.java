@@ -1,8 +1,10 @@
-package com.fuzzoland.bungeeportals.commands;
+package com.applenick.bungeeportals.commands;
 
-import com.fuzzoland.bungeeportals.BungeePortals;
-import com.google.common.primitives.Ints;
-import com.sk89q.worldedit.bukkit.selections.Selection;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -14,10 +16,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import com.applenick.bungeeportals.BungeePortals;
+import com.google.common.primitives.Ints;
+import com.sk89q.worldedit.bukkit.selections.Selection;
 
 public class BungeePortalsCommand implements CommandExecutor {
 
