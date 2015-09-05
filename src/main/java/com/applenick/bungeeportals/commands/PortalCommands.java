@@ -110,7 +110,7 @@ public class PortalCommands {
 			}
 		}
 
-		sender.sendMessage(ChatColor.AQUA.toString() + removed + ChatColor.GREEN + " portals in the selection have been removed for" + ChatColor.RED + (serverName != null ? " server " + serverName : "all servers") + ".");
+		sender.sendMessage(ChatColor.AQUA.toString() + removed + ChatColor.GREEN + " portals in the selection have been removed for " + ChatColor.RED + (serverName != null ? " server " + serverName : "all servers") + ".");
 
 		if (removed == 0) return; // prevent saving
 
@@ -167,15 +167,15 @@ public class PortalCommands {
 			World world = player.getWorld();
 			for (Location location : getLocationsFromSelection(selection)) {
 				Block block = world.getBlockAt(location);
-				block.setType(materialType);
-				String locString = world.getName() + '#' + block.getX() + '#' + block.getY() + '#' + block.getZ();
-				if (BungeePortals.get().getPortalData().putIfAbsent(locString, server) == null) { //TODO: add overwrite flag in arg
-					count++;
+				if(block.getType() == Material.AIR){
+					block.setType(materialType);
+					String locString = world.getName() + '#' + block.getX() + '#' + block.getY() + '#' + block.getZ();
+					if (BungeePortals.get().getPortalData().putIfAbsent(locString, server) == null) { //TODO: add overwrite flag in arg
+						count++;
+					}
 				}
 			}
-
-
-			player.sendMessage(ChatColor.GREEN + "A BungeePortal to" + ChatColor.AQUA + server + ChatColor.GREEN + "has been created." + ChatColor.GRAY + "[" + ChatColor.RED + count +  ChatColor.WHITE + " - " + ChatColor.GOLD + type.toUpperCase() + ChatColor.GRAY + "]");
+			player.sendMessage(ChatColor.GREEN + "A " + ChatColor.AQUA + "BungeePortal" + ChatColor.GREEN + " to " + ChatColor.GOLD + server + ChatColor.GREEN + "has been created. " + ChatColor.GRAY + "[" + ChatColor.RED + count +  ChatColor.WHITE + " - " + ChatColor.GOLD + type.toUpperCase() + ChatColor.GRAY + "]");
 			player.playSound(player.getLocation(), Sound.LEVEL_UP, 10, 5);
 			if (count == 0) return; // prevent saving
 
