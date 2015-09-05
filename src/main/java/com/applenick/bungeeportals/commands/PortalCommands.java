@@ -96,18 +96,20 @@ public class PortalCommands {
 			Block block = world.getBlockAt(location);
 			if (isPortal(block.getType())) {
 				block.setType(Material.AIR);
-				final boolean result;
-				final String data = world.getName() + '#' + block.getX() + '#' + block.getY() + '#' + block.getZ();
-				if (serverName == null) {
-					result = BungeePortals.get().getPortalData().remove(data) != null;
-				} else {
-					result = BungeePortals.get().getPortalData().remove(data, serverName);
-				}
-
-				if (result) {
-					++removed;
-				}
 			}
+			
+			final boolean result;
+			final String data = world.getName() + '#' + block.getX() + '#' + block.getY() + '#' + block.getZ();
+			if (serverName == null) {
+				result = BungeePortals.get().getPortalData().remove(data) != null;
+			} else {
+				result = BungeePortals.get().getPortalData().remove(data, serverName);
+			}
+
+			if (result) {
+				++removed;
+			}
+			
 		}
 
 		sender.sendMessage(ChatColor.AQUA.toString() + removed + ChatColor.GREEN + " portals in the selection have been removed for " + ChatColor.RED + (serverName != null ? " server " + serverName : "all servers") + ".");
@@ -175,7 +177,7 @@ public class PortalCommands {
 					}
 				}
 			}
-			player.sendMessage(ChatColor.GREEN + "A " + ChatColor.AQUA + "BungeePortal" + ChatColor.GREEN + " to " + ChatColor.GOLD + server + ChatColor.GREEN + "has been created. " + ChatColor.GRAY + "[" + ChatColor.RED + count +  ChatColor.WHITE + " - " + ChatColor.GOLD + type.toUpperCase() + ChatColor.GRAY + "]");
+			player.sendMessage(ChatColor.GREEN + "A portal to " + ChatColor.GOLD + server + ChatColor.GREEN + " has been created. " + ChatColor.GRAY + "[" + ChatColor.RED + count +  ChatColor.WHITE + " - " + ChatColor.GOLD + type.toUpperCase() + ChatColor.GRAY + "]");
 			player.playSound(player.getLocation(), Sound.LEVEL_UP, 10, 5);
 			if (count == 0) return; // prevent saving
 
