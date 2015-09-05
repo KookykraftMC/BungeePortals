@@ -32,7 +32,7 @@ public class PortalCommands {
 
 	public static class PortalCommandsParent{
 		@Command(
-				aliases = {"portals", "bungeeportals", "bp"},
+				aliases = {"portals", "bungeeportals", "bportals", "bp"},
 				desc = "Control your Bungee Portals"
 				)
 		@NestedCommand(PortalCommands.class)
@@ -110,7 +110,7 @@ public class PortalCommands {
 			}
 		}
 
-		sender.sendMessage(ChatColor.GREEN.toString() + removed + " portals in the selection have been removed for" + (serverName != null ? " server " + serverName : "all servers") + ".");
+		sender.sendMessage(ChatColor.AQUA.toString() + removed + ChatColor.GREEN + " portals in the selection have been removed for" + ChatColor.RED + (serverName != null ? " server " + serverName : "all servers") + ".");
 
 		if (removed == 0) return; // prevent saving
 
@@ -175,8 +175,7 @@ public class PortalCommands {
 			}
 
 
-			sender.sendMessage(ChatColor.GREEN.toString() + count + " portals have been created for server " + server + " in the selection.");
-			player.sendMessage(ChatColor.GREEN + "A new " + ChatColor.AQUA + type + " BungeePortal has been created.");
+			player.sendMessage(ChatColor.GREEN + "A BungeePortal to" + ChatColor.AQUA + server + ChatColor.GREEN + "has been created." + ChatColor.GRAY + "[" + ChatColor.RED + count +  ChatColor.WHITE + " - " + ChatColor.GOLD + type.toUpperCase() + ChatColor.GRAY + "]");
 			player.playSound(player.getLocation(), Sound.LEVEL_UP, 10, 5);
 			if (count == 0) return; // prevent saving
 
@@ -193,7 +192,7 @@ public class PortalCommands {
 
 
 	private static boolean isPortal(Material block){
-		if(block == Material.LAVA || block == Material.WATER || block == Material.ENDER_PORTAL || block == Material.PORTAL || block == Material.WEB){
+		if(block == Material.LAVA || block == Material.WATER || block == Material.STATIONARY_WATER || block == Material.STATIONARY_LAVA || block == Material.ENDER_PORTAL || block == Material.PORTAL || block == Material.WEB){
 			return true;
 		}else{
 			return false;
