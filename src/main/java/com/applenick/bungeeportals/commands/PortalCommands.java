@@ -15,7 +15,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.applenick.bungeeportals.BungeePortals;
-import com.applenick.bungeeportals.PortalManager;
 import com.sk89q.minecraft.util.commands.Command;
 import com.sk89q.minecraft.util.commands.CommandContext;
 import com.sk89q.minecraft.util.commands.CommandException;
@@ -131,7 +130,7 @@ public class PortalCommands {
 	@Command(
 			aliases = {"create" , "add", "c"},
 			desc = "Creates a BungeePortal",
-			usage = "[server] [type]"
+			usage = "[server]"
 			)
 	@CommandPermissions("bportals.create")
 	public static void createPortalCommand(final CommandContext args, final CommandSender sender) throws CommandException{
@@ -146,18 +145,16 @@ public class PortalCommands {
 		}
 
 
-		if(args.argsLength() < 2){
+		if(args.argsLength() == 0){
 			sender.sendMessage(ChatColor.RED + "Please provide a [server] and [type]");
 		}
 
 
-		if(args.argsLength() == 2){
+		if(args.argsLength() == 1){
 			String server = args.getString(0).toLowerCase();
-			String type = args.getString(1);
 
 			Player player = (Player) sender;
 			Selection selection = BungeePortals.get().getWorldEdit().getSelection(player);
-			Material materialType = PortalManager.getPortalMaterial(type);
 
 			if (selection == null) {
 				sender.sendMessage(ChatColor.RED + "You need to have a WorldEdit selection to do this.");
@@ -169,14 +166,13 @@ public class PortalCommands {
 			for (Location location : getLocationsFromSelection(selection)) {
 				Block block = world.getBlockAt(location);
 				if(block.getType() == Material.AIR){
-					block.setType(materialType);
 					String locString = world.getName() + '#' + block.getX() + '#' + block.getY() + '#' + block.getZ();
 					if (BungeePortals.get().getPortalData().putIfAbsent(locString, server) == null) { //TODO: add overwrite flag in arg
 						count++;
 					}
 				}
 			}
-			player.sendMessage(ChatColor.GREEN + "A portal to " + ChatColor.GOLD + server + ChatColor.GREEN + " has been created. " + ChatColor.GRAY + "[" + ChatColor.RED + count +  ChatColor.WHITE + " - " + ChatColor.GOLD + type.toUpperCase() + ChatColor.GRAY + "]");
+			player.sendMessage(ChatColor.GREEN + "A portal to " + ChatColor.GOLD + server + ChatColor.GREEN + " has been created. " + ChatColor.GRAY + "[" + ChatColor.RED + count + ChatColor.GRAY + "]");
 			player.playSound(player.getLocation(), Sound.LEVEL_UP, 10, 5);
 			if (count == 0) return; // prevent saving
 

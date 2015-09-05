@@ -16,20 +16,4 @@ public class PortalManager {
 
 
 
-	public static Material getPortalMaterial(String type){
-		if(type.equalsIgnoreCase("END")){
-			return Material.ENDER_PORTAL;
-		}else if(type.equalsIgnoreCase("LAVA")){
-			return Material.STATIONARY_LAVA;
-		}else if(type.equalsIgnoreCase("PORTAL")){
-			return Material.PORTAL;
-		}else if(type.equalsIgnoreCase("WATER")){
-			return Material.STATIONARY_WATER;
-		}else if(type.equalsIgnoreCase("WEB")){
-			return Material.WEB;
-		}else{
-			return Material.PORTAL;
-		}
-
-	}
 }
