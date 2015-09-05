@@ -20,11 +20,11 @@ public class PortalManager {
 		if(type.equalsIgnoreCase("END")){
 			return Material.ENDER_PORTAL;
 		}else if(type.equalsIgnoreCase("LAVA")){
-			return Material.LAVA;
+			return Material.STATIONARY_LAVA;
 		}else if(type.equalsIgnoreCase("PORTAL")){
 			return Material.PORTAL;
 		}else if(type.equalsIgnoreCase("WATER")){
-			return Material.WATER;
+			return Material.STATIONARY_WATER;
 		}else if(type.equalsIgnoreCase("WEB")){
 			return Material.WEB;
 		}else{

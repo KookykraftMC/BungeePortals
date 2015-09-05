@@ -97,7 +97,6 @@ public class PortalCommands {
 			if (isPortal(block.getType())) {
 				block.setType(Material.AIR);
 			}
-			
 			final boolean result;
 			final String data = world.getName() + '#' + block.getX() + '#' + block.getY() + '#' + block.getZ();
 			if (serverName == null) {
