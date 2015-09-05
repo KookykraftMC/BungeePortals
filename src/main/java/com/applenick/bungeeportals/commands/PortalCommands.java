@@ -165,11 +165,9 @@ public class PortalCommands {
 			World world = player.getWorld();
 			for (Location location : getLocationsFromSelection(selection)) {
 				Block block = world.getBlockAt(location);
-				if(block.getType() == Material.AIR){
 					String locString = world.getName() + '#' + block.getX() + '#' + block.getY() + '#' + block.getZ();
 					if (BungeePortals.get().getPortalData().putIfAbsent(locString, server) == null) { //TODO: add overwrite flag in arg
 						count++;
-					}
 				}
 			}
 			player.sendMessage(ChatColor.GREEN + "A portal to " + ChatColor.GOLD + server + ChatColor.GREEN + " has been created. " + ChatColor.GRAY + "[" + ChatColor.RED + count + ChatColor.GRAY + "]");
